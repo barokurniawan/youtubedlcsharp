@@ -18,6 +18,7 @@ namespace YoutubeDownloader
             btnDownload.Enabled = false;
             this.dataTable = new DataTable();
 
+            this.Text = "Youtube Downloader";
             this.FormatBucket = new List<Entity.YoutubeFormats>();
             DrawDatatable();
         }
