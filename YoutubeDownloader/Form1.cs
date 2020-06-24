@@ -104,6 +104,8 @@ namespace YoutubeDownloader
         void OnCompleteDownload(Object sender, AsyncCompletedEventArgs e)
         {
             btnDownload.Enabled = true;
+            DownloadProgress.Equals(0);
+            MessageBox.Show("Download complete", "Your download has been complete.");
         }
 
         private void DownloadProgressChange(Object sender, DownloadProgressChangedEventArgs e)
