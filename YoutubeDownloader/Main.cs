@@ -4,22 +4,23 @@ using System.ComponentModel;
 using System.Data;
 using System.Net;
 using System.Windows.Forms;
+using YoutubeDownloader.Src.Entity;
 
 namespace YoutubeDownloader
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         private DataTable dataTable;
-        private List<Entity.YoutubeFormats> FormatBucket;
+        private List<YoutubeFormat> FormatBucket;
 
-        public Form1()
+        public Main()
         {
             InitializeComponent();
             btnDownload.Enabled = false;
             this.dataTable = new DataTable();
 
             this.Text = "Youtube Downloader";
-            this.FormatBucket = new List<Entity.YoutubeFormats>();
+            this.FormatBucket = new List<YoutubeFormat>();
             DrawDatatable();
         }
 
@@ -42,7 +43,7 @@ namespace YoutubeDownloader
                 this.FormatBucket.Clear();
                 foreach (var item in yt.formats)
                 {
-                    Entity.YoutubeFormats f = new Entity.YoutubeFormats();
+                    YoutubeFormat f = new YoutubeFormat();
                     f.SetExt(Convert.ToString(item.ext));
                     f.SetFilesize((int) item.filesize);
                     f.SetAcodec(Convert.ToString(item.acodec));
@@ -71,6 +72,7 @@ namespace YoutubeDownloader
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
             process.Start();
+
             //* Read the output (or the error)
             string output = process.StandardOutput.ReadToEnd();
             string err = process.StandardError.ReadToEnd();
@@ -88,8 +90,8 @@ namespace YoutubeDownloader
         private void btnDownload_Click(object sender, EventArgs e)
         {
             btnDownload.Enabled = false;
-            Entity.YoutubeFormats[] items = this.FormatBucket.ToArray();
-            Entity.YoutubeFormats item = (Entity.YoutubeFormats) items.GetValue(tableResult.CurrentCell.RowIndex);
+            YoutubeFormat[] items = this.FormatBucket.ToArray();
+            YoutubeFormat item = (YoutubeFormat) items.GetValue(tableResult.CurrentCell.RowIndex);
 
             using(WebClient cl = new WebClient())
             {

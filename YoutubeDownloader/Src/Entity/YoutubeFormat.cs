@@ -1,7 +1,7 @@
 ﻿
-namespace YoutubeDownloader.Entity
+namespace YoutubeDownloader.Src.Entity
 {
-    class YoutubeFormats
+    class YoutubeFormat
     {
         public string ext;
         public int filesize;
@@ -10,7 +10,7 @@ namespace YoutubeDownloader.Entity
         public string url;
         public string filename;
 
-        public YoutubeFormats(string ext = null, int filesize = 0, string acodec = null, string vcodec = null, string url = null, string filename = null)
+        public YoutubeFormat(string ext = null, int filesize = 0, string acodec = null, string vcodec = null, string url = null, string filename = null)
         {
             this.SetExt(ext);
             this.SetFilesize(filesize);
