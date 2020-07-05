@@ -113,7 +113,7 @@
             this.txtTitle.Size = new System.Drawing.Size(0, 13);
             this.txtTitle.TabIndex = 7;
             // 
-            // Form1
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -126,8 +126,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtYoutubeURL);
             this.Controls.Add(this.btnExecute);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "Main";
+            this.Text = "Youtube Downloader";
             ((System.ComponentModel.ISupportInitialize)(this.tableResult)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

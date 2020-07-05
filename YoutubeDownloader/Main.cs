@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Net;
 using System.Windows.Forms;
+using YoutubeDownloader.Src.Constant;
 using YoutubeDownloader.Src.Entity;
 
 namespace YoutubeDownloader
@@ -12,15 +14,34 @@ namespace YoutubeDownloader
     {
         private DataTable dataTable;
         private List<YoutubeFormat> FormatBucket;
+        private string ExecutablePath;
+        private string DownloadPath;
 
         public Main()
         {
+            string resourceDir = Path.Combine(Environment.CurrentDirectory, ConstantApp.RESOURCE_DIR);
+            if (!Directory.Exists(resourceDir))
+            {
+                Directory.CreateDirectory(resourceDir);
+            }
+
+            ExecutablePath = Path.Combine(resourceDir, ConstantApp.EXECUTE_FILE);
+            if (!File.Exists(ExecutablePath))
+            {
+                (new AppStarter()).ShowDialog();
+            }
+
+            DownloadPath = Path.Combine(Environment.CurrentDirectory, ConstantApp.DOWNLOAD_DIR);
+            if (!Directory.Exists(DownloadPath))
+            {
+                Directory.CreateDirectory(DownloadPath);
+            }
+
             InitializeComponent();
             btnDownload.Enabled = false;
             this.dataTable = new DataTable();
-
-            this.Text = "Youtube Downloader";
             this.FormatBucket = new List<YoutubeFormat>();
+
             DrawDatatable();
         }
 
@@ -43,16 +64,20 @@ namespace YoutubeDownloader
                 this.FormatBucket.Clear();
                 foreach (var item in yt.formats)
                 {
+                    var filesize = (item.filesize == null) ? 0 : item.filesize;
+                    var vcodec = (item.vcodec == null) ? 0 : item.vcodec;
+                    var acodec = (item.acodec == null) ? 0 : item.acodec;
+
                     YoutubeFormat f = new YoutubeFormat();
                     f.SetExt(Convert.ToString(item.ext));
-                    f.SetFilesize((int) item.filesize);
-                    f.SetAcodec(Convert.ToString(item.acodec));
-                    f.SetVcodec(Convert.ToString(item.vcodec));
+                    f.SetFilesize((int) filesize);
+                    f.SetAcodec(Convert.ToString(acodec));
+                    f.SetVcodec(Convert.ToString(vcodec));
                     f.SetUrl(Convert.ToString(item.url));
                     f.SetFilename(Convert.ToString(yt.fulltitle));
 
                     this.FormatBucket.Add(f);
-                    Object[] c = { item.ext, ((int)item.filesize / 1024), item.acodec, item.vcodec };
+                    Object[] c = { item.ext, ((int) filesize / 1024), item.acodec, item.vcodec };
                     this.dataTable.Rows.Add(c);
                 }
             }
@@ -66,7 +91,7 @@ namespace YoutubeDownloader
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.FileName = "youtube-dl.exe";
+            process.StartInfo.FileName = ExecutablePath;
             process.StartInfo.Arguments = "--dump-json " + txtYoutubeURL.Text;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
@@ -76,7 +101,6 @@ namespace YoutubeDownloader
             //* Read the output (or the error)
             string output = process.StandardOutput.ReadToEnd();
             string err = process.StandardError.ReadToEnd();
-            Console.WriteLine(err);
             dynamic yt = Newtonsoft.Json.JsonConvert.DeserializeObject(output);
 
             txtTitle.Text = yt.fulltitle;
@@ -99,7 +123,7 @@ namespace YoutubeDownloader
                 cl.DownloadFileCompleted += new AsyncCompletedEventHandler(OnCompleteDownload);
                 cl.DownloadFileAsync(
                     new System.Uri(item.getUrl()),
-                    item.GetFilename() +"." + item.GetExt()
+                    Path.Combine(DownloadPath, item.GetFilename() + "." + item.GetExt())
                 );
             }
         }
@@ -115,6 +139,5 @@ namespace YoutubeDownloader
         {
             DownloadProgress.Value = e.ProgressPercentage;
         }
-
     }
 }
